@@ -549,7 +549,16 @@ api.patient.getAll = function(cb) {
     //these are the accounts that have shared their data
     //with a given set of permissions.
     var viewableUsers = _.filter(users, function(user) {
-      return !_.isEmpty(user.trustorPermissions);
+      var perms = typeof user.trustorPermissions === "object" ? user.trustorPermissions : null;
+      var haveProp = false;
+
+      if (perms !== null) {
+        ["view", "node", "upload", "edit", "admin"].forEach(function(prop) {
+          haveProp = haveProp || perms.hasOwnProperty(prop);
+        });
+      }
+
+      return haveProp;
     });
 
     viewableUsers = _.map(viewableUsers, function(user) {
